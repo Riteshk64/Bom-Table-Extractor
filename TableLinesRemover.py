@@ -31,7 +31,12 @@ class TableLinesRemover:
         self.grey = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
 
     def threshold_image(self):
-        self.thresholded_image = cv2.threshold(self.grey, 127, 255, cv2.THRESH_BINARY)[1]
+        self.thresholded_image = cv2.adaptiveThreshold(
+        self.grey, 255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY,
+        17, 7
+    )
 
     def invert_image(self):
         self.inverted_image = cv2.bitwise_not(self.thresholded_image)

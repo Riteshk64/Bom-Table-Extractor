@@ -108,7 +108,7 @@ class OcrToTableTool:
             current_row = []
 
     def get_result_from_tersseract(self, image_path):
-        tesseract_path = r'"C:\Users\121807\Documents\tesseract.exe"'  # in quotes to handle spaces
+        tesseract_path = r'"C:\Users\121807\Documents\tesseract.exe"'
         command = f'{tesseract_path} "{image_path}" - -l eng --oem 3 --psm 7 --dpi 72 -c tessedit_char_whitelist="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789().calmg* "'
         output = subprocess.getoutput(command)
         return output.strip()

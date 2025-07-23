@@ -3,7 +3,7 @@ import TableExtractor as te
 import TableLinesRemover as tlr
 import cv2
 
-path_to_image = "drawing.jpg"
+path_to_image = "d1.jpg"
 table_extractor = te.TableExtractor(path_to_image)
 perspective_corrected_image = table_extractor.execute()
 
