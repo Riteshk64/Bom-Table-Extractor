@@ -1,43 +1,6 @@
-a
-ITEM,2,DESCRIPTION
-1,1M1781000,TABLE. MAIN,4
-a,1,aa
-1
-4,4,22124,a am Za Sal
-5,1,150.601,
-Sa STATON Sm
-6,1,1M178S002
-
-7,2,M1783502,SWING ARM MOUNT
-) BRACKET
-,,TT,M178S001,TEST a ION CLIENT
-ON OSS
-9,1,1M1784000,TOOL CADDY
-10,4,22128Z2,laa FLAT MOUNT
-,ll,2,PC2735RP42U
-12,Error, cannot read input file ./ocr_slices/img_49.jpg: No such file or directory
-Error during processing.,LCD1234SA,SWING ARM. LCD FLAT
-PANEL
-13,4,,24.1128,,4
-a
-14,4,4,24185,
-a 6
-15,18,120058
-a
-Bottom=0, top=3, base=0, x=0
-
-Total count=0
-Min=0.00 Really=0
-Lower quartile=0.00
-Median=0.00, ile(0.5)=0.00
-Upper quartile=0.00
-Max=0.00 Really=0
-Range=1
-Mean= 0.00
-SD= 0.00
-16,2,8502674
-a,17,a,241168,
-aS. aa
-18,1,FLCLCD1600120017
-
-19,8,242188
+REVISIONS:
+REV;,DESCRIPTION,DATE,APPROVED
+2.,Added Filets,02/18/2021,AOM
+37,Addeddimenslionstodrawings,02/18/2021-,ADM
+4,Addedaholetopart,02/18/2021-,ADM
+s,Addedadditionalnotes,02/18/2021,ADM

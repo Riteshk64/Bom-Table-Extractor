@@ -103,7 +103,7 @@ class TableExtractor:
 
     def add_10_percent_padding(self):
         image_height = self.image.shape[0]
-        padding = int(image_height * 0.1)
+        padding = int(image_height * 0.05)
         self.perspective_corrected_image_with_padding = cv2.copyMakeBorder(self.perspective_corrected_image, padding, padding, padding, padding, cv2.BORDER_CONSTANT, value=[255, 255, 255])
 
     def draw_contours(self):
@@ -115,27 +115,15 @@ class TableExtractor:
         return dis
     
     def order_points(self, pts):
-        # initialzie a list of coordinates that will be ordered
-        # such that the first entry in the list is the top-left,
-        # the second entry is the top-right, the third is the
-        # bottom-right, and the fourth is the bottom-left
         pts = pts.reshape(4, 2)
         rect = np.zeros((4, 2), dtype="float32")
-
-        # the top-left point will have the smallest sum, whereas
-        # the bottom-right point will have the largest sum
         s = pts.sum(axis=1)
         rect[0] = pts[np.argmin(s)]
         rect[2] = pts[np.argmax(s)]
-
-        # now, compute the difference between the points, the
-        # top-right point will have the smallest difference,
-        # whereas the bottom-left will have the largest difference
         diff = np.diff(pts, axis=1)
         rect[1] = pts[np.argmin(diff)]
         rect[3] = pts[np.argmax(diff)]
 
-        # return the ordered coordinates
         return rect
     
     def store_process_image(self, file_name, image):

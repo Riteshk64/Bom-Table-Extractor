@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import subprocess
+import re
 
 class OcrToTableTool:
 
@@ -9,6 +10,7 @@ class OcrToTableTool:
         self.original_image = original_image
 
     def execute(self):
+        self.clean_noise()
         self.dilate_image()
         self.store_process_image('0_dilated_image.jpg', self.dilated_image)
         self.find_contours()
@@ -22,20 +24,27 @@ class OcrToTableTool:
         self.crop_each_bounding_box_and_ocr()
         self.generate_csv_file()
 
+    # def threshold_image(self):
+    #     return cv2.threshold(self.grey_image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+
     def threshold_image(self):
-        return cv2.threshold(self.grey_image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
+        return cv2.adaptiveThreshold(
+        self.grey, 255,
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY,
+        21, 5
+    )
+
+    def clean_noise(self):
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
+        self.thresholded_image = cv2.morphologyEx(self.thresholded_image, cv2.MORPH_OPEN, kernel)
 
     def convert_image_to_grayscale(self):
         return cv2.cvtColor(self.image, self.dilated_image)
 
     def dilate_image(self):
-        kernel_to_remove_gaps_between_words = np.array([
-                [1,1,1,1,1,1,1,1,1,1],
-               [1,1,1,1,1,1,1,1,1,1]
-        ])
-        self.dilated_image = cv2.dilate(self.thresholded_image, kernel_to_remove_gaps_between_words, iterations=5)
-        simple_kernel = np.ones((5,5), np.uint8)
-        self.dilated_image = cv2.dilate(self.dilated_image, simple_kernel, iterations=2)
+        horizontal_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (20, 3))
+        self.dilated_image = cv2.dilate(self.thresholded_image, horizontal_kernel, iterations=1)
     
     def find_contours(self):
         result = cv2.findContours(self.dilated_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -56,10 +65,19 @@ class OcrToTableTool:
     def convert_contours_to_bounding_boxes(self):
         self.bounding_boxes = []
         self.image_with_all_bounding_boxes = self.original_image.copy()
+        
         for contour in self.contours:
             x, y, w, h = cv2.boundingRect(contour)
+            if w < 10 or h < 10:
+                continue
+            if w * h < 100:
+                continue
+
             self.bounding_boxes.append((x, y, w, h))
-            self.image_with_all_bounding_boxes = cv2.rectangle(self.image_with_all_bounding_boxes, (x, y), (x + w, y + h), (0, 255, 0), 5)
+            self.image_with_all_bounding_boxes = cv2.rectangle(
+                self.image_with_all_bounding_boxes, (x, y), (x + w, y + h), (0, 255, 0), 2
+            )
+
 
     def get_mean_height_of_bounding_boxes(self):
         heights = []
@@ -97,19 +115,47 @@ class OcrToTableTool:
         for row in self.rows:
             for bounding_box in row:
                 x, y, w, h = bounding_box
-                y = y - 5
+                padding = 3
+                x = max(x - padding, 0)
+                y = max(y - padding, 0)
+                w = w + 2 * padding
+                h = h + 2 * padding
+
                 cropped_image = self.original_image[y:y+h, x:x+w]
+
+                gray = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2GRAY)
+                blurred = cv2.GaussianBlur(gray, (3, 3), 0)
+                enhanced = cv2.adaptiveThreshold(
+                    blurred, 255,
+                    cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                    cv2.THRESH_BINARY,
+                    15, 2
+                )
+
                 image_slice_path = "./ocr_slices/img_" + str(image_number) + ".jpg"
-                cv2.imwrite(image_slice_path, cropped_image)
+                cv2.imwrite(image_slice_path, enhanced)
                 results_from_ocr = self.get_result_from_tersseract(image_slice_path)
+                results_from_ocr = self.clean_text(results_from_ocr)
+                results_from_ocr = self.fix_spacing(results_from_ocr)
+
                 current_row.append(results_from_ocr)
                 image_number += 1
             self.table.append(current_row)
             current_row = []
+    
+    def clean_text(self, text):
+        if text.count(',') > 2 and not any(c.isalpha() for c in text):
+            text = text.replace(',', '.')
+        else:
+            text = text.replace(',', ';')
+        return text.strip()
+
+    def fix_spacing(self, text):
+        return re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', text)
 
     def get_result_from_tersseract(self, image_path):
         tesseract_path = r'"C:\Users\121807\Documents\tesseract.exe"'
-        command = f'{tesseract_path} "{image_path}" - -l eng --oem 3 --psm 7 --dpi 72 -c tessedit_char_whitelist="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789().calmg* "'
+        command = f'{tesseract_path} "{image_path}" - -l eng --oem 3 --psm 7 --dpi 72 -c tessedit_char_whitelist="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789()-.*%/+:,"'
         output = subprocess.getoutput(command)
         return output.strip()
 
