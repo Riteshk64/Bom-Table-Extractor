@@ -115,11 +115,21 @@ class OcrToTableTool:
         for row in self.rows:
             for bounding_box in row:
                 x, y, w, h = bounding_box
-                padding = 3
-                x = max(x - padding, 0)
-                y = max(y - padding, 0)
-                w = w + 2 * padding
-                h = h + 2 * padding
+                # padding = 3
+                # x = max(x - padding, 0)
+                # y = max(y - padding, 0)
+                # w = w + 2 * padding
+                # h = h + 2 * padding
+
+                padding_left = 4
+                padding_top = 3
+                padding_right = 3
+                padding_bottom = 3
+
+                x = max(x - padding_left, 0)
+                y = max(y - padding_top, 0)
+                w = w + padding_left + padding_right
+                h = h + padding_top + padding_bottom
 
                 cropped_image = self.original_image[y:y+h, x:x+w]
 
@@ -155,7 +165,7 @@ class OcrToTableTool:
 
     def get_result_from_tersseract(self, image_path):
         tesseract_path = r'"C:\Users\121807\Documents\tesseract.exe"'
-        command = f'{tesseract_path} "{image_path}" - -l eng --oem 3 --psm 7 --dpi 72 -c tessedit_char_whitelist="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789()-.*%/+:,"'
+        command = f'{tesseract_path} "{image_path}" - -l eng --oem 3 --psm 6 --dpi 72 -c tessedit_char_whitelist="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789()-_.*%/+:, "'
         output = subprocess.getoutput(command)
         return output.strip()
 

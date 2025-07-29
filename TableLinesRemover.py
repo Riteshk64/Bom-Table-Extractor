@@ -35,7 +35,7 @@ class TableLinesRemover:
         self.grey, 255,
         cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
         cv2.THRESH_BINARY,
-        21, 8
+        21, 9
     )
         
     # def threshold_image(self):
