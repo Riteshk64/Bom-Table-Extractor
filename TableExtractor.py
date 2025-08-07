@@ -23,14 +23,10 @@ class TableExtractor:
         self.store_process_image("7_only_rectangular_contours.jpg", self.image_with_only_rectangular_contours)
         self.find_largest_contour_by_area()
         self.store_process_image("8_contour_with_max_area.jpg", self.image_with_contour_with_max_area)
-        self.order_points_in_the_contour_with_max_area()
-        self.store_process_image("9_with_4_corner_points_plotted.jpg", self.image_with_points_plotted)
-        self.calculate_new_width_and_height_of_image()
-        self.apply_perspective_transform()
-        self.store_process_image("10_perspective_corrected.jpg", self.perspective_corrected_image)
-        self.add_10_percent_padding()
-        self.store_process_image("11_perspective_corrected_with_padding.jpg", self.perspective_corrected_image_with_padding)
-        return self.perspective_corrected_image_with_padding
+        self.crop_to_largest_contour()
+        self.store_process_image("9_cropped_table.jpg", self.cropped_table_image)
+        return self.cropped_table_image
+
 
     def read_image(self):
         self.image = cv2.imread(self.image_path)
@@ -126,6 +122,10 @@ class TableExtractor:
 
         return rect
     
+    def crop_to_largest_contour(self):
+        x, y, w, h = cv2.boundingRect(self.contour_with_max_area)
+        self.cropped_table_image = self.image[y:y+h, x:x+w]
+        
     def store_process_image(self, file_name, image):
         path = "./process_images/table_extractor/" + file_name
         cv2.imwrite(path, image)
