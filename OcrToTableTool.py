@@ -115,21 +115,21 @@ class OcrToTableTool:
         for row in self.rows:
             for bounding_box in row:
                 x, y, w, h = bounding_box
-                # padding = 3
-                # x = max(x - padding, 0)
-                # y = max(y - padding, 0)
-                # w = w + 2 * padding
-                # h = h + 2 * padding
+                padding = 3
+                x = max(x - padding, 0)
+                y = max(y - padding, 0)
+                w = w + 2 * padding
+                h = h + 2 * padding
 
-                padding_left = 4
-                padding_top = 3
-                padding_right = 3
-                padding_bottom = 3
+                # padding_left = 4
+                # padding_top = 3
+                # padding_right = 3
+                # padding_bottom = 3
 
-                x = max(x - padding_left, 0)
-                y = max(y - padding_top, 0)
-                w = w + padding_left + padding_right
-                h = h + padding_top + padding_bottom
+                # x = max(x - padding_left, 0)
+                # y = max(y - padding_top, 0)
+                # w = w + padding_left + padding_right
+                # h = h + padding_top + padding_bottom
 
                 cropped_image = self.original_image[y:y+h, x:x+w]
 
