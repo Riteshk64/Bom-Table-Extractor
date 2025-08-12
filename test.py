@@ -19,7 +19,7 @@ detect_horizontal = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, horizontal_kernel, 
 cnts = cv2.findContours(detect_horizontal, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 cnts = cnts[0] if len(cnts) == 2 else cnts[1]
 for c in cnts:
-    cv2.drawContours(image, [c], -1, (255,255,255), 3)
+    cv2.drawContours(image, [c], -1, (255,255,255), 2)
 
 # Remove vertical lines
 vertical_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1,50))
@@ -27,12 +27,12 @@ detect_vertical = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, vertical_kernel, iter
 cnts = cv2.findContours(detect_vertical, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 cnts = cnts[0] if len(cnts) == 2 else cnts[1]
 for c in cnts:
-    cv2.drawContours(image, [c], -1, (255,255,255), 3)
+    cv2.drawContours(image, [c], -1, (255,255,255), 2)
 
 # Perform OCR
-data = pytesseract.image_to_string(image, lang='eng',config='--psm 6')
+data = pytesseract.image_to_string(image, lang='eng',config='--psm 4')
 print(data)
 
 cv2.imshow('image', image)
-cv2.imwrite('image7.png', image)
+cv2.imwrite('test_outputs/image1.jpg', image)
 cv2.waitKey()
