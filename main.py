@@ -1,17 +1,15 @@
-import OcrToTableTool as ottt
 import TableExtractor as te
-import TableLinesRemover as tlr
+import TableOCRExtractor as toe
 import cv2
 
-path_to_image = "./images/d1.jpg"
-table_extractor = te.TableExtractor(path_to_image)
-perspective_corrected_image = table_extractor.execute()
+table_extractor = te.TableExtractor("./images/d1.jpg")
+cropped_img = table_extractor.execute()
 
-lines_remover = tlr.TableLinesRemover(perspective_corrected_image)
-image_without_lines = lines_remover.execute()
+# Save cropped table so OCR can read it
+cv2.imwrite("temp_cropped_table.jpg", cropped_img)
 
-ocr_tool = ottt.OcrToTableTool(image_without_lines, perspective_corrected_image)
-ocr_tool.execute()
+# Step 2: OCR
+ocr_extractor = toe.TableOCRExtractor("temp_cropped_table.jpg", tesseract_path=r"C:\Users\121807\Documents\tesseract.exe")
+df = ocr_extractor.execute()
 
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+print(df)
