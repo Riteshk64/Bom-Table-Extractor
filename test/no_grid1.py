@@ -4,7 +4,7 @@ import numpy as np
 
 pytesseract.pytesseract.tesseract_cmd =r"C:\Users\121807\Documents\tesseract.exe"
 
-image = cv2.imread(r'..\images\input_images\coupling2.jpg')
+image = cv2.imread(r'..\images\input_images\coupling.jpg')
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
 

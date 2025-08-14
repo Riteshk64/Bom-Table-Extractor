@@ -27,7 +27,6 @@ class TableExtractor:
         self.store_process_image("9_cropped_table.jpg", self.cropped_table_image)
         return self.cropped_table_image
 
-
     def read_image(self):
         self.image = cv2.imread(self.image_path)
 

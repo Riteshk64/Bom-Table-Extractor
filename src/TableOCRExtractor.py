@@ -3,7 +3,6 @@ import numpy as np
 import pytesseract
 import pandas as pd
 import re
-import os
 
 class TableOCRExtractor:
     def __init__(self, table_image, tesseract_path=None):
@@ -25,7 +24,6 @@ class TableOCRExtractor:
         self.table_gray = cv2.GaussianBlur(cv2.cvtColor(self.table, cv2.COLOR_BGR2GRAY), (3,3), 0, 0)
         _, self.thre = cv2.threshold(self.table_gray, 200, 255, cv2.THRESH_BINARY, cv2.THRESH_OTSU)
 
-    # === Step 2: Detect rows & columns ===
     def detect_rows_and_columns(self):
         kernel_row = cv2.getStructuringElement(cv2.MORPH_RECT, (50,1))
         morph_row = cv2.morphologyEx(self.thre, cv2.MORPH_CLOSE, kernel_row)
@@ -37,7 +35,6 @@ class TableOCRExtractor:
         contours, _ = cv2.findContours(morph_col, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         self.cols = sorted([cv2.boundingRect(cv2.approxPolyDP(c, 3, True)) for c in contours], key=lambda b: b[0])
 
-    # === Step 3: Detect cells and OCR ===
     def detect_cells_and_ocr(self):
         _, thre2 = cv2.threshold(self.thre, 0, 255, cv2.THRESH_BINARY_INV)
         no_table = cv2.bitwise_and(cv2.morphologyEx(self.thre, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (50,1))), thre2)
@@ -73,7 +70,6 @@ class TableOCRExtractor:
 
         self.text_position = sorted(self.text_position, key=lambda x: (x['row'], x['col'], x['Text']))
 
-    # === Step 4: Build raw dataframe ===
     def build_dataframe(self):
         merged = {}
         for t in self.text_position:
@@ -89,7 +85,6 @@ class TableOCRExtractor:
 
         self.df = pd.DataFrame(table_data)
 
-    # === Step 5: Clean dataframe ===
     def clean_dataframe(self):
         def clean_id(val):
             if pd.isna(val): return val
