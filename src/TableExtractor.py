@@ -127,7 +127,7 @@ class TableExtractor:
         self.cropped_table_image = self.image[y:y+h, x:x+w]
         
     def store_process_image(self, file_name, image):
-        path = "./process_images/table_extractor/" + file_name
+        path = "../images/table_extractor/" + file_name
         cv2.imwrite(path, image)
         
         

@@ -3,7 +3,7 @@ from streamlit_cropper import st_cropper
 from PIL import Image
 import numpy as np
 import pandas as pd
-from TableOCRExtractor import TableOCRExtractor
+from src.TableOCRExtractor import TableOCRExtractor
 import io
 import fitz  # PyMuPDF
 

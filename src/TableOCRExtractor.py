@@ -7,7 +7,6 @@ import os
 
 class TableOCRExtractor:
     def __init__(self, table_image, tesseract_path=None):
-        # table_image is a NumPy array now
         self.table_image = table_image
         if tesseract_path:
             pytesseract.pytesseract.tesseract_cmd = tesseract_path
