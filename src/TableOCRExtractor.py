@@ -25,20 +25,20 @@ class TableOCRExtractor:
         _, self.thre = cv2.threshold(self.table_gray, 200, 255, cv2.THRESH_BINARY, cv2.THRESH_OTSU)
 
     def detect_rows_and_columns(self):
-        kernel_row = cv2.getStructuringElement(cv2.MORPH_RECT, (50,1))
+        kernel_row = cv2.getStructuringElement(cv2.MORPH_RECT, (40,1))
         morph_row = cv2.morphologyEx(self.thre, cv2.MORPH_CLOSE, kernel_row)
         contours, _ = cv2.findContours(morph_row, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         self.rows = sorted([cv2.boundingRect(cv2.approxPolyDP(c, 3, True)) for c in contours], key=lambda b: b[1])
 
-        kernel_col = cv2.getStructuringElement(cv2.MORPH_RECT, (1,50))
+        kernel_col = cv2.getStructuringElement(cv2.MORPH_RECT, (1,40))
         morph_col = cv2.morphologyEx(self.thre, cv2.MORPH_CLOSE, kernel_col)
         contours, _ = cv2.findContours(morph_col, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
         self.cols = sorted([cv2.boundingRect(cv2.approxPolyDP(c, 3, True)) for c in contours], key=lambda b: b[0])
 
     def detect_cells_and_ocr(self):
         _, thre2 = cv2.threshold(self.thre, 0, 255, cv2.THRESH_BINARY_INV)
-        no_table = cv2.bitwise_and(cv2.morphologyEx(self.thre, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (50,1))), thre2)
-        no_table = cv2.bitwise_and(cv2.morphologyEx(self.thre, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (1,50))), no_table)
+        no_table = cv2.bitwise_and(cv2.morphologyEx(self.thre, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (40,1))), thre2)
+        no_table = cv2.bitwise_and(cv2.morphologyEx(self.thre, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (1,40))), no_table)
 
         kernel2 = cv2.getStructuringElement(cv2.MORPH_RECT, (10,2))
         mask = cv2.morphologyEx(no_table, cv2.MORPH_CLOSE, kernel2)
